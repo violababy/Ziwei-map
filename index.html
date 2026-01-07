@@ -1,144 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>紫微飛星視覺引擎</title>
+<meta charset="UTF-8">
+<title>紫微飛星視覺引擎</title>
 
-  <script>
-  // ========================
-  // 宮位座標資料庫
-  // ========================
-  const palaceMap = {
-    P1:  { name: "命宮", x: 850, y: 115 },
-    P2:  { name: "父母", x: 850, y: 285 },
-    P3:  { name: "福德", x: 850, y: 455 },
-    P4:  { name: "田宅", x: 850, y: 625 },
-    P5:  { name: "官祿", x: 630, y: 625 },
-    P6:  { name: "僕役", x: 410, y: 625 },
-    P7:  { name: "遷移", x: 190, y: 625 },
-    P8:  { name: "疾厄", x: 190, y: 455 },
-    P9:  { name: "財帛", x: 190, y: 285 },
-    P10: { name: "子女", x: 190, y: 115 },
-    P11: { name: "夫妻", x: 410, y: 115 },
-    P12: { name: "兄弟", x: 630, y: 115 }
-  };
+<style>
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 20px;
+}
 
-  // ========================
-  // 畫線函式（自動依宮位代碼畫線）
-  // ========================
-  function drawArrow(from, to, color = "green") {
-    const start = palaceMap[from];
-    const end = palaceMap[to];
-    if (!start || !end) return;
+h1 {
+  text-align: center;
+}
 
-    const svg = document.querySelector("svg");
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+svg {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-    line.setAttribute("x1", start.x);
-    line.setAttribute("y1", start.y);
-    line.setAttribute("x2", end.x);
-    line.setAttribute("y2", end.y);
-    line.setAttribute("stroke", color);
-    line.setAttribute("stroke-width", "3");
+.palace {
+  fill: #f9fafb;
+  stroke: #333;
+  stroke-width: 1.5;
+  rx: 12;
+}
 
-    svg.appendChild(line);
-  }
-
-  // ========================
-  // 頁面載入後自動測試
-  // ========================
-  window.onload = () => {
-    // 測試：命宮 → 官祿
-    drawArrow("P1", "P5", "green");
-  };
-  </script>
-
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    svg {
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 100%;
-      overflow: visible;
-    }
-
-    .palace {
-      fill: #f9fafb;
-      stroke: #333;
-      stroke-width: 1.5;
-      rx: 12;
-    }
-
-    .palace-text {
-      font-size: 14px;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      fill: #222;
-      font-weight: 600;
-    }
-  </style>
+.palace-text {
+  font-size: 14px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #222;
+  font-weight: 600;
+}
+</style>
 </head>
 
 <body>
 
-<h1>🔮 紫微飛星視覺引擎（測試版）</h1>
+<h1>🔮 紫微飛星視覺引擎（資料驅動版）</h1>
 
 <div style="overflow-x:auto;">
-<svg width="1100" height="800">
+<svg id="board" width="1100" height="800">
 
-  <!-- 上排 -->
-  <rect class="palace" x="100" y="60" width="180" height="110"/>
-  <text class="palace-text" x="190" y="115">子女</text>
+<!-- 上排 -->
+<rect class="palace" x="100" y="60"  width="180" height="110"/><text class="palace-text" x="190" y="115">子女</text>
+<rect class="palace" x="320" y="60"  width="180" height="110"/><text class="palace-text" x="410" y="115">夫妻</text>
+<rect class="palace" x="540" y="60"  width="180" height="110"/><text class="palace-text" x="630" y="115">兄弟</text>
+<rect class="palace" x="760" y="60"  width="180" height="110"/><text class="palace-text" x="850" y="115">命宮</text>
 
-  <rect class="palace" x="320" y="60" width="180" height="110"/>
-  <text class="palace-text" x="410" y="115">夫妻</text>
+<!-- 左側 -->
+<rect class="palace" x="100" y="230" width="180" height="110"/><text class="palace-text" x="190" y="285">財帛</text>
+<rect class="palace" x="100" y="400" width="180" height="110"/><text class="palace-text" x="190" y="455">疾厄</text>
 
-  <rect class="palace" x="540" y="60" width="180" height="110"/>
-  <text class="palace-text" x="630" y="115">兄弟</text>
-
-  <rect class="palace" x="760" y="60" width="180" height="110"/>
-  <text class="palace-text" x="850" y="115">命宮</text>
-
-  <!-- 左側中排 -->
-  <rect class="palace" x="100" y="230" width="180" height="110"/>
-  <text class="palace-text" x="190" y="285">財帛</text>
-
-  <rect class="palace" x="100" y="400" width="180" height="110"/>
-  <text class="palace-text" x="190" y="455">疾厄</text>
-
-  <!-- 右側中排 -->
-  <rect class="palace" x="760" y="230" width="180" height="110"/>
-  <text class="palace-text" x="850" y="285">父母</text>
-
-  <rect class="palace" x="760" y="400" width="180" height="110"/>
-  <text class="palace-text" x="850" y="455">福德</text>
-
-  <!-- 下排 -->
-  <rect class="palace" x="100" y="570" width="180" height="110"/>
-  <text class="palace-text" x="190" y="625">遷移</text>
-
-  <rect class="palace" x="320" y="570" width="180" height="110"/>
-  <text class="palace-text" x="410" y="625">僕役</text>
-
-  <rect class="palace" x="540" y="570" width="180" height="110"/>
-  <text class="palace-text" x="630" y="625">官祿</text>
-
-  <rect class="palace" x="760" y="570" width="180" height="110"/>
-  <text class="palace-text" x="850" y="625">田宅</text>
-
-</svg>
-</div>
-
-</body>
-</html>
+<!-- 右側 -->
+<rect class="palace" x="760" y="230" width="180" height="
