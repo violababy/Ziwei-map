@@ -191,22 +191,6 @@ function drawArrow(flow) {
     line.setAttribute("marker-end", `url(#${style.marker})`);
   }
 
-  // ===== 動畫設定（慢速能量流）=====
-  const totalLength = Math.sqrt(
-    Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)
-  );
-
-  line.setAttribute("stroke-dasharray", totalLength);
-  line.setAttribute("stroke-dashoffset", totalLength);
-
-  const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
-  animate.setAttribute("attributeName", "stroke-dashoffset");
-  animate.setAttribute("from", totalLength);
-  animate.setAttribute("to", "0");
-  animate.setAttribute("dur", "6s");          // 🌿 動慢一點
-  animate.setAttribute("repeatCount", "indefinite");
-
-  line.appendChild(animate);
   svg.appendChild(line);
 }
 
