@@ -57,4 +57,76 @@ svg {
 <rect class="palace" x="100" y="400" width="180" height="110"/><text class="palace-text" x="190" y="455">疾厄</text>
 
 <!-- 右側 -->
-<rect class="palace" x="760" y="230" width="180" height="
+<rect class="palace" x="760" y="230" width="180" height="110"/><text class="palace-text" x="850" y="285">父母</text>
+<rect class="palace" x="760" y="400" width="180" height="110"/><text class="palace-text" x="850" y="455">福德</text>
+
+<!-- 下排 -->
+<rect class="palace" x="100" y="570" width="180" height="110"/><text class="palace-text" x="190" y="625">遷移</text>
+<rect class="palace" x="320" y="570" width="180" height="110"/><text class="palace-text" x="410" y="625">僕役</text>
+<rect class="palace" x="540" y="570" width="180" height="110"/><text class="palace-text" x="630" y="625">官祿</text>
+<rect class="palace" x="760" y="570" width="180" height="110"/><text class="palace-text" x="850" y="625">田宅</text>
+
+</svg>
+</div>
+
+<script>
+/* 🧭 宮位中心座標表 */
+const palaceMap = {
+  P1:  { name: "命宮", x: 850, y: 115 },
+  P2:  { name: "父母", x: 850, y: 285 },
+  P3:  { name: "福德", x: 850, y: 455 },
+  P4:  { name: "田宅", x: 850, y: 625 },
+  P5:  { name: "官祿", x: 630, y: 625 },
+  P6:  { name: "僕役", x: 410, y: 625 },
+  P7:  { name: "遷移", x: 190, y: 625 },
+  P8:  { name: "疾厄", x: 190, y: 455 },
+  P9:  { name: "財帛", x: 190, y: 285 },
+  P10: { name: "子女", x: 190, y: 115 },
+  P11: { name: "夫妻", x: 410, y: 115 },
+  P12: { name: "兄弟", x: 630, y: 115 }
+};
+
+/* 🎨 四化顏色規則 */
+const flowColors = {
+  "祿": "green",
+  "權": "red",
+  "科": "blue",
+  "忌": "black"
+};
+
+/* 🔮 飛化資料（只改這裡就好） */
+const flows = [
+  { from: "P1", to: "P5", type: "祿" },
+  { from: "P5", to: "P9", type: "權" },
+  { from: "P3", to: "P12", type: "科" },
+  { from: "P2", to: "P8", type: "忌" }
+];
+
+/* ✏️ 畫線函數 */
+function drawArrow(flow) {
+  const start = palaceMap[flow.from];
+  const end   = palaceMap[flow.to];
+  if (!start || !end) return;
+
+  const svg = document.getElementById("board");
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+  line.setAttribute("x1", start.x);
+  line.setAttribute("y1", start.y);
+  line.setAttribute("x2", end.x);
+  line.setAttribute("y2", end.y);
+  line.setAttribute("stroke", flowColors[flow.type] || "gray");
+  line.setAttribute("stroke-width", "3");
+  line.setAttribute("opacity", "0.9");
+
+  svg.appendChild(line);
+}
+
+/* 🚀 初始化 */
+window.onload = () => {
+  flows.forEach(drawArrow);
+};
+</script>
+
+</body>
+</html>
