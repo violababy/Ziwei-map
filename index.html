@@ -146,11 +146,18 @@ const flowStyles = {
 // =======================
 // 飛化資料（你未來只要改這裡）
 // =======================
-const flows = [
-  { from: "P1", to: "P5", type: "祿" },
-  { from: "P5", to: "P9", type: "權" },
-  { from: "P3", to: "P12", type: "忌" }
-];
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTgcGpmwkeK-j6BvXOb71qFJRr29GpkTXqLuQhPUV564OcVZpUQwABiko51O_5m3vPMON6FQTWKMekh/pub?gid=0&single=true&output=csv";
+
+async function loadFlowsFromSheet() {
+  const res = await fetch(SHEET_URL);
+  const text = await res.text();
+  const lines = text.trim().split("\n").slice(1);
+
+  return lines.map(row => {
+    const [from, to, type] = row.split(",");
+    return { from: from.trim(), to: to.trim(), type: type.trim() };
+  });
+}
 
 // =======================
 // 畫箭頭函數
@@ -197,7 +204,8 @@ function drawArrow(flow) {
 // =======================
 // 初始化繪圖
 // =======================
-window.onload = () => {
+window.onload = async () => {
+  const flows = await loadFlowsFromSheet();
   flows.forEach(drawArrow);
 };
 </script>
