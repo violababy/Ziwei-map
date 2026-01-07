@@ -168,9 +168,7 @@ function drawArrow(flow) {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
   const length = Math.sqrt(dx * dx + dy * dy) || 1;
-
-  // 起點與終點往內縮的距離（可微調）
-  const padding = 30;
+  const padding = 35;
 
   const offsetX = (dx / length) * padding;
   const offsetY = (dy / length) * padding;
@@ -186,13 +184,29 @@ function drawArrow(flow) {
   line.setAttribute("x2", x2);
   line.setAttribute("y2", y2);
   line.setAttribute("stroke", style.color);
-  line.setAttribute("stroke-width", "2");   // ← 線變細
+  line.setAttribute("stroke-width", "2");
   line.setAttribute("opacity", "0.95");
 
   if (style.marker) {
     line.setAttribute("marker-end", `url(#${style.marker})`);
   }
 
+  // ===== 動畫設定（慢速能量流）=====
+  const totalLength = Math.sqrt(
+    Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)
+  );
+
+  line.setAttribute("stroke-dasharray", totalLength);
+  line.setAttribute("stroke-dashoffset", totalLength);
+
+  const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+  animate.setAttribute("attributeName", "stroke-dashoffset");
+  animate.setAttribute("from", totalLength);
+  animate.setAttribute("to", "0");
+  animate.setAttribute("dur", "6s");          // 🌿 動慢一點
+  animate.setAttribute("repeatCount", "indefinite");
+
+  line.appendChild(animate);
   svg.appendChild(line);
 }
 
