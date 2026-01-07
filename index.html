@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>紫微飛星視覺引擎</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    svg {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .palace {
+      fill: #f9fafb;
+      stroke: #333;
+      stroke-width: 1.5;
+      rx: 12;
+    }
+
+    .palace-text {
+      font-size: 14px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: #222;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+<h1>🔮 紫微飛星視覺引擎（測試版）</h1>
+
+<svg width="900" height="700">
+
+  <!-- 命宮 -->
+  <rect class="palace" x="350" y="40" width="180" height="90"></rect>
+  <text class="palace-text" x="440" y="85">命宮</text>
+
+  <!-- 父母 -->
+  <rect class="palace" x="550" y="140" width="180" height="90"></rect>
+  <text class="palace-text" x="640" y="185">父母</text>
+
+  <!-- 福德 -->
+  <rect class="palace" x="550" y="260" width="180" height="90"></rect>
+  <text class="palace-text" x="640" y="305">福德</text>
+
+  <!-- 田宅 -->
+  <rect class="palace" x="350" y="380" width="180" height="90"></rect>
+  <text class="palace-text" x="440" y="425">田宅</text>
+
+  <!-- 官祿 -->
+  <rect class="palace" x="150" y="260" width="180" height="90"></rect>
+  <text class="palace-text" x="240" y="305">官祿</text>
+
+  <!-- 僕役 -->
+  <rect class="palace" x="150" y="140" width="180" height="90"></rect>
+  <text class="palace-text" x="240" y="185">僕役</text>
+
+</svg>
+
+</body>
+</html>
