@@ -389,18 +389,18 @@ p.stars.bad .forEach(s => starItems.push({name:s, cls:"star-bad",  row:0}));
 p.stars.sub.forEach(s => starItems.push({name:s, cls:"star-sub", row:1}));
 
   // 佈局：最多 3 欄，自動換行
-  const cols = 3;
-  const cellW = area.w / cols;
-  const cellH = 20; // 行高
-  const maxRows = Math.floor(area.h / cellH);
-  const max = cols * maxRows;
 
-  // 如果星太多，先塞得下的（之後可做縮字或滾動）
-  const visible = starItems.slice(0, max);
+const cols = 3;
+const cellW = area.w / cols;
+const rowY = [0, 26];   // 第一排 / 第二排 的 Y 偏移
+const visible = starItems;
 
-  visible.forEach((it, idx) => {
-    const col = idx % cols;
-    const row = Math.floor(idx / cols);
+visible.forEach((it, idx) => {
+  const sameRow = visible.filter(x => x.row === it.row);
+  const colIndex = sameRow.indexOf(it) % cols;
+
+  const cx = area.x + colIndex * cellW + cellW / 2;
+  const cy = area.y + rowY[it.row] + 12;
 
     const cx = area.x + col*cellW + cellW/2;
     const cy = area.y + row*cellH + cellH/2;
