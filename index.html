@@ -319,27 +319,11 @@ function buildNatal(rows){
 
 /** ========= SVG 繪製 ========= */
 const svg = document.getElementById("svg");
-const arrowLayer = document.getElementById("arrow-layer");
-const boxLayer   = document.getElementById("box-layer");
+let arrowLayer = document.getElementById("arrow-layer");
+let boxLayer   = document.getElementById("box-layer");
 function clearSVG(){
-  const defs = svg.querySelector("defs");
-
-  svg.innerHTML = "";
-  if (defs) svg.appendChild(defs);
-
-  // 重新建立圖層
-  const arrowG = elNS("g");
-  arrowG.setAttribute("id", "arrow-layer");
-
-  const boxG = elNS("g");
-  boxG.setAttribute("id", "box-layer");
-
-  svg.appendChild(arrowG);
-  svg.appendChild(boxG);
-
-  // 更新全域引用
-  window.arrowLayer = arrowG;
-  window.boxLayer = boxG;
+  if (arrowLayer) arrowLayer.innerHTML = "";
+  if (boxLayer) boxLayer.innerHTML = "";
 }
 
 function elNS(tag){
