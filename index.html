@@ -499,9 +499,21 @@ function buildStarIndex(natal){
 }
 
 /** 算宮中心點 */
-function palaceCenter(code){
+function palaceCenter(code, slot = 0, total = 1){
   const pos = layout[code];
-  return { x: pos.x + layout.w/2, y: pos.y + layout.h/2 };
+
+  const cx = pos.x + layout.w / 2;
+  const cy = pos.y + layout.h / 2;
+
+  // 在宮框邊緣做「扇形分流出口」
+  const spread = 36;           // 出口總寬
+  const gap = spread / Math.max(total, 1);
+  const offset = (slot - (total - 1) / 2) * gap;
+
+  return {
+    x: cx + offset,
+    y: cy
+  };
 }
 
 /** 線段端點縮進盒子邊界，避免壓到文字 */
@@ -574,8 +586,8 @@ function curvedPath(start, end, bend){
 function drawArrow(fromCode, toCode, type, orderInFrom = 0) {
   if (fromCode === toCode) return;
 
-  const fromC = palaceCenter(fromCode);
-  const toC = palaceCenter(toCode);
+const fromC = palaceCenter(fromCode, orderInFrom, 4);
+const toC = palaceCenter(toCode);
 
 const { start, end } = clipToRect(fromC, toC, fromCode, toCode, 34);
 
