@@ -557,7 +557,7 @@ const dist = Math.hypot(dx, dy);
 const distanceFactor = Math.max(0.6, 220 / dist);
 
 // 同起點第幾條線做扇形展開
-const bend = (orderInFrom - 1.5) * 18 * distanceFactor;
+const bend = (orderInFrom - 1.5) * 40 * distanceFactor;
   const d = curvedPath(start, end, bend);
 
   const path = elNS("path");
@@ -574,13 +574,8 @@ const bend = (orderInFrom - 1.5) * 18 * distanceFactor;
                : "url(#m-ji)";
   path.setAttribute("marker-end", marker);
 
-  // 放到最底層：線先畫、格子與文字在上面
-  // 所以我們把線插在 defs 後面
-  const defs = svg.querySelector("defs");
-  if(defs && defs.nextSibling){
-    svg.insertBefore(path, defs.nextSibling);
-  }else{
-    svg.appendChild(path);
+ // 直接畫在最上層（不再被格子遮住）
+svg.appendChild(path);
   }
 }
 
