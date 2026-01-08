@@ -1,213 +1,456 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<title>紫微飛星視覺引擎</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>紫微飛星視覺引擎（資料驅動）</title>
 
-<style>
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f4f6f8;
-  margin: 0;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-}
-
-svg {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.palace {
-  fill: #f9fafb;
-  stroke: #333;
-  stroke-width: 1.5;
-  rx: 12;
-}
-
-.palace-text {
-  font-size: 14px;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  fill: #222;
-  font-weight: 600;
-}
-</style>
+  <style>
+    body{
+      font-family:"Segoe UI", Arial, sans-serif;
+      background:#f4f6f8;
+      margin:0;
+      padding:20px;
+    }
+    h1{ text-align:center; margin: 8px 0 14px; }
+    .hint{
+      text-align:center;
+      color:#444;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .panel{
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.10);
+      padding: 12px;
+      overflow-x:auto;
+    }
+    svg{
+      background:#ffffff;
+      border-radius:12px;
+      max-width:100%;
+      overflow: visible;
+      display:block;
+      margin:0 auto;
+    }
+    .palace{
+      fill:#f9fafb;
+      stroke:#333;
+      stroke-width:1.5;
+      rx:12;
+    }
+    .palace-text{
+      font-size:14px;
+      text-anchor:middle;
+      dominant-baseline:middle;
+      fill:#222;
+      font-weight:600;
+      user-select:none;
+      pointer-events:none;
+    }
+    .status{
+      text-align:center;
+      margin-top:10px;
+      font-size: 13px;
+      color:#666;
+      white-space: pre-line;
+    }
+    .legend{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      margin: 8px 0 2px;
+      font-size: 13px;
+      color:#333;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      display:inline-block; margin-right:6px;
+      vertical-align:middle;
+    }
+  </style>
 </head>
 
 <body>
+  <h1>🔮 紫微飛星視覺引擎（資料驅動 / 宮干四化）</h1>
+  <div class="hint">你只要改 Google Sheet，這裡會自動更新箭頭（祿/權/科/忌）。</div>
 
-<h1>🔮 紫微飛星視覺引擎（測試版）</h1>
+  <div class="legend">
+    <span><span class="dot" style="background:#0B5D1E"></span>化祿（深綠）</span>
+    <span><span class="dot" style="background:#0B3D91"></span>化權（深藍）</span>
+    <span><span class="dot" style="background:#4DA3FF"></span>化科（淺藍）</span>
+    <span><span class="dot" style="background:#D11F1F"></span>化忌（紅）</span>
+  </div>
 
-<div style="overflow-x:auto;">
-<svg id="board" width="1100" height="800">
+  <div class="panel">
+    <svg id="board" width="1100" height="800" viewBox="0 0 1100 800" aria-label="Ziwei board">
+      <!-- 箭頭樣式：用 context-stroke 讓箭頭顏色跟線一致 -->
+      <defs>
+        <marker id="arrowHead" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" stroke="context-stroke"></path>
+        </marker>
+      </defs>
 
-<!-- ========== 箭頭定義 ========== -->
-<defs>
-  <marker id="arrow-green" viewBox="0 0 10 10" refX="10" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f7a1f"/>
-  </marker>
+      <!-- 線會畫在最上層；我們用兩層：底線層 + 宮位層 -->
+      <g id="linesLayer"></g>
+      <g id="palacesLayer">
+        <!-- 上排 -->
+        <!-- P10 子女 -->
+        <rect class="palace" x="100" y="60" width="180" height="110"></rect>
+        <text class="palace-text" x="190" y="115">子女</text>
 
-  <marker id="arrow-darkblue" viewBox="0 0 10 10" refX="10" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#0b3c8a"/>
-  </marker>
+        <!-- P11 夫妻 -->
+        <rect class="palace" x="320" y="60" width="180" height="110"></rect>
+        <text class="palace-text" x="410" y="115">夫妻</text>
 
-  <marker id="arrow-lightblue" viewBox="0 0 10 10" refX="10" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#4aa3df"/>
-  </marker>
+        <!-- P12 兄弟 -->
+        <rect class="palace" x="540" y="60" width="180" height="110"></rect>
+        <text class="palace-text" x="630" y="115">兄弟</text>
 
-  <marker id="arrow-red" viewBox="0 0 10 10" refX="10" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#d12b2b"/>
-  </marker>
-</defs>
+        <!-- P1 命宮 -->
+        <rect class="palace" x="760" y="60" width="180" height="110"></rect>
+        <text class="palace-text" x="850" y="115">命宮</text>
 
-<!-- ========== 宮位方框 ========== -->
+        <!-- 左側中排 -->
+        <!-- P9 財帛 -->
+        <rect class="palace" x="100" y="230" width="180" height="110"></rect>
+        <text class="palace-text" x="190" y="285">財帛</text>
 
-<!-- 上排 -->
-<rect class="palace" x="100" y="60" width="180" height="110"/>
-<text class="palace-text" x="190" y="115">子女</text>
+        <!-- P8 疾厄 -->
+        <rect class="palace" x="100" y="400" width="180" height="110"></rect>
+        <text class="palace-text" x="190" y="455">疾厄</text>
 
-<rect class="palace" x="320" y="60" width="180" height="110"/>
-<text class="palace-text" x="410" y="115">夫妻</text>
+        <!-- 右側中排 -->
+        <!-- P2 父母 -->
+        <rect class="palace" x="760" y="230" width="180" height="110"></rect>
+        <text class="palace-text" x="850" y="285">父母</text>
 
-<rect class="palace" x="540" y="60" width="180" height="110"/>
-<text class="palace-text" x="630" y="115">兄弟</text>
+        <!-- P3 福德 -->
+        <rect class="palace" x="760" y="400" width="180" height="110"></rect>
+        <text class="palace-text" x="850" y="455">福德</text>
 
-<rect class="palace" x="760" y="60" width="180" height="110"/>
-<text class="palace-text" x="850" y="115">命宮</text>
+        <!-- 下排 -->
+        <!-- P7 遷移 -->
+        <rect class="palace" x="100" y="570" width="180" height="110"></rect>
+        <text class="palace-text" x="190" y="625">遷移</text>
 
-<!-- 左側 -->
-<rect class="palace" x="100" y="230" width="180" height="110"/>
-<text class="palace-text" x="190" y="285">財帛</text>
+        <!-- P6 僕役 -->
+        <rect class="palace" x="320" y="570" width="180" height="110"></rect>
+        <text class="palace-text" x="410" y="625">僕役</text>
 
-<rect class="palace" x="100" y="400" width="180" height="110"/>
-<text class="palace-text" x="190" y="455">疾厄</text>
+        <!-- P5 官祿 -->
+        <rect class="palace" x="540" y="570" width="180" height="110"></rect>
+        <text class="palace-text" x="630" y="625">官祿</text>
 
-<!-- 右側 -->
-<rect class="palace" x="760" y="230" width="180" height="110"/>
-<text class="palace-text" x="850" y="285">父母</text>
+        <!-- P4 田宅 -->
+        <rect class="palace" x="760" y="570" width="180" height="110"></rect>
+        <text class="palace-text" x="850" y="625">田宅</text>
+      </g>
+    </svg>
 
-<rect class="palace" x="760" y="400" width="180" height="110"/>
-<text class="palace-text" x="850" y="455">福德</text>
-
-<!-- 下排 -->
-<rect class="palace" x="100" y="570" width="180" height="110"/>
-<text class="palace-text" x="190" y="625">遷移</text>
-
-<rect class="palace" x="320" y="570" width="180" height="110"/>
-<text class="palace-text" x="410" y="625">僕役</text>
-
-<rect class="palace" x="540" y="570" width="180" height="110"/>
-<text class="palace-text" x="630" y="625">官祿</text>
-
-<rect class="palace" x="760" y="570" width="180" height="110"/>
-<text class="palace-text" x="850" y="625">田宅</text>
-
-</svg>
-</div>
+    <div id="status" class="status">狀態：等待載入資料…</div>
+  </div>
 
 <script>
-// =======================
-// 宮位中心座標
-// =======================
-const palaceMap = {
-  P1:  { name: "命宮", x: 850, y: 115 },
-  P2:  { name: "父母", x: 850, y: 285 },
-  P3:  { name: "福德", x: 850, y: 455 },
-  P4:  { name: "田宅", x: 850, y: 625 },
-  P5:  { name: "官祿", x: 630, y: 625 },
-  P6:  { name: "僕役", x: 410, y: 625 },
-  P7:  { name: "遷移", x: 190, y: 625 },
-  P8:  { name: "疾厄", x: 190, y: 455 },
-  P9:  { name: "財帛", x: 190, y: 285 },
-  P10: { name: "子女", x: 190, y: 115 },
-  P11: { name: "夫妻", x: 410, y: 115 },
-  P12: { name: "兄弟", x: 630, y: 115 }
+/** ✅ 你的兩個 Google Sheet CSV（你已提供） **/
+const CSV_TRANSFORMS_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkNreRfwK7wRhPyQF-hSpVYN_tOlne58Ozjofq6vNxiKZSC7Xd2jfyaK6qE0RsjXYI_WWEKDlZaPIk/pub?gid=1520997816&single=true&output=csv";
+
+const CSV_NATAL_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkNreRfwK7wRhPyQF-hSpVYN_tOlne58Ozjofq6vNxiKZSC7Xd2jfyaK6qE0RsjXYI_WWEKDlZaPIk/pub?gid=0&single=true&output=csv";
+
+/** ✅ 你指定的顏色 **/
+const COLOR_MAP = {
+  "祿": "#0B5D1E",     // 深綠
+  "權": "#0B3D91",     // 深藍
+  "科": "#4DA3FF",     // 淺藍
+  "忌": "#D11F1F"      // 紅
 };
 
-// =======================
-// 四化顏色與箭頭設定
-// =======================
-const flowStyles = {
-  "祿": { color: "#1f7a1f", marker: "arrow-green" },      
-  "權": { color: "#0b3c8a", marker: "arrow-darkblue" },  
-  "科": { color: "#4aa3df", marker: "arrow-lightblue" }, 
-  "忌": { color: "#d12b2b", marker: "arrow-red" }        
+/** 宮位座標：以「格子中心」當作基準點（但畫線會自動避開文字，會縮短線段） **/
+const PALACE_BOX = {
+  P1:  { name:"命宮", x:760, y:60,  w:180, h:110 },
+  P2:  { name:"父母", x:760, y:230, w:180, h:110 },
+  P3:  { name:"福德", x:760, y:400, w:180, h:110 },
+  P4:  { name:"田宅", x:760, y:570, w:180, h:110 },
+  P5:  { name:"官祿", x:540, y:570, w:180, h:110 },
+  P6:  { name:"僕役", x:320, y:570, w:180, h:110 },
+  P7:  { name:"遷移", x:100, y:570, w:180, h:110 },
+  P8:  { name:"疾厄", x:100, y:400, w:180, h:110 },
+  P9:  { name:"財帛", x:100, y:230, w:180, h:110 },
+  P10: { name:"子女", x:100, y:60,  w:180, h:110 },
+  P11: { name:"夫妻", x:320, y:60,  w:180, h:110 },
+  P12: { name:"兄弟", x:540, y:60,  w:180, h:110 }
 };
 
-// =======================
-// 飛化資料（你未來只要改這裡）
-// =======================
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTgcGpmwkeK-j6BvXOb71qFJRr29GpkTXqLuQhPUV564OcVZpUQwABiko51O_5m3vPMON6FQTWKMekh/pub?gid=0&single=true&output=csv";
-
-async function loadFlowsFromSheet() {
-  const res = await fetch(SHEET_URL);
-  const text = await res.text();
-  const lines = text.trim().split("\n").slice(1);
-
-  return lines.map(row => {
-    const [from, to, type] = row.split(",");
-    return { from: from.trim(), to: to.trim(), type: type.trim() };
-  });
+function setStatus(msg){
+  document.getElementById("status").textContent = msg;
 }
 
-// =======================
-// 畫箭頭函數
-// =======================
-function drawArrow(flow) {
-  const start = palaceMap[flow.from];
-  const end   = palaceMap[flow.to];
-  if (!start || !end) return;
+/** ---------- CSV 解析（支援一般逗號、引號） ---------- **/
+function parseCSV(text){
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuotes = false;
 
-  const svg = document.getElementById("board");
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  const style = flowStyles[flow.type] || { color: "#999", marker: null };
+  for (let i=0; i<text.length; i++){
+    const c = text[i];
+    const next = text[i+1];
 
-  // ===== 計算方向向量（避免壓到文字）=====
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  const length = Math.sqrt(dx * dx + dy * dy) || 1;
-  const padding = 35;
+    if (c === '"' ){
+      if (inQuotes && next === '"'){ // 連續雙引號 = 跳脫
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
 
-  const offsetX = (dx / length) * padding;
-  const offsetY = (dy / length) * padding;
+    if (!inQuotes && c === ","){
+      row.push(cur.trim());
+      cur = "";
+      continue;
+    }
 
-  const x1 = start.x + offsetX;
-  const y1 = start.y + offsetY;
-  const x2 = end.x - offsetX;
-  const y2 = end.y - offsetY;
+    if (!inQuotes && (c === "\n" || c === "\r")){
+      if (c === "\r" && next === "\n") i++;
+      row.push(cur.trim());
+      cur = "";
+      // 忽略空白行
+      if (row.some(v => v !== "")) rows.push(row);
+      row = [];
+      continue;
+    }
 
-  // ===== 畫線 =====
-  line.setAttribute("x1", x1);
-  line.setAttribute("y1", y1);
-  line.setAttribute("x2", x2);
-  line.setAttribute("y2", y2);
-  line.setAttribute("stroke", style.color);
-  line.setAttribute("stroke-width", "2");
-  line.setAttribute("opacity", "0.95");
-
-  if (style.marker) {
-    line.setAttribute("marker-end", `url(#${style.marker})`);
+    cur += c;
   }
 
-  svg.appendChild(line);
+  row.push(cur.trim());
+  if (row.some(v => v !== "")) rows.push(row);
+
+  return rows;
 }
 
-// =======================
-// 初始化繪圖
-// =======================
-window.onload = async () => {
-  const flows = await loadFlowsFromSheet();
-  flows.forEach(drawArrow);
-};
+function rowsToObjects(rows){
+  if (!rows || rows.length < 2) return [];
+  const header = rows[0].map(h => h.trim());
+  const objs = [];
+  for (let i=1; i<rows.length; i++){
+    const r = rows[i];
+    const o = {};
+    for (let j=0; j<header.length; j++){
+      o[header[j]] = (r[j] ?? "").trim();
+    }
+    objs.push(o);
+  }
+  return objs;
+}
+
+async function fetchCSV(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`抓取失敗：${res.status} ${res.statusText}`);
+  const text = await res.text();
+  return rowsToObjects(parseCSV(text));
+}
+
+/** ---------- 資料理解：四化對照表（宮干 -> 祿權科忌 -> 星曜） ---------- **/
+function buildStemTransformMap(transformRows){
+  // 常見欄位名稱：宮干 / 天干 / 干
+  // 常見四化欄位：化祿/祿、生年祿(不一定)、化權/權、化科/科、化忌/忌
+  const pick = (obj, keys) => keys.map(k => obj[k]).find(v => v !== undefined && v !== "") ?? "";
+
+  const map = {}; // stem -> {祿: 星, 權: 星, 科: 星, 忌: 星}
+
+  for (const r of transformRows){
+    const stem = pick(r, ["宮干","天干","干","宮位天干","宮位干"]).trim();
+    if (!stem) continue;
+
+    const lu  = pick(r, ["化祿","祿","四化祿","禄"]);
+    const quan= pick(r, ["化權","權","四化權"]);
+    const ke  = pick(r, ["化科","科","四化科"]);
+    const ji  = pick(r, ["化忌","忌","四化忌"]);
+
+    map[stem] = {
+      "祿": (lu||"").trim(),
+      "權": (quan||"").trim(),
+      "科": (ke||"").trim(),
+      "忌": (ji||"").trim()
+    };
+  }
+  return map;
+}
+
+/** ---------- 資料理解：本命盤（P1~P12 的宮干 + 星曜落點） ---------- **/
+function normalizeStarName(s){
+  return (s || "").trim().replace(/\s+/g,"");
+}
+
+function buildNatalIndex(natalRows){
+  // 你本命盤 tab 目前欄位看起來有：
+  // A: 宮位代碼, B: 宮位, C: 宮干, D: 身宮, E..: 主星/吉星/煞星/乙級星/生年祿權科忌/自化...
+  // 我們要：
+  // 1) palaceStem[P#] = 宮干
+  // 2) starToPalace[星名] = P#（星在哪個宮）
+  const palaceStem = {};
+  const starToPalace = {};
+
+  // 找「宮位代碼」欄位名稱
+  const codeKeyCandidates = ["宮位代碼","宮位代码","代碼","代号","P","代碼(P)"];
+  const stemKeyCandidates = ["宮干","天干","干"];
+  const palaceNameCandidates = ["宮位","宮名","宮位名稱","宫位"];
+
+  const headerKeys = natalRows.length ? Object.keys(natalRows[0]) : [];
+
+  const findKey = (cands) => cands.find(k => headerKeys.includes(k)) || "";
+
+  const codeKey = findKey(codeKeyCandidates) || "宮位代碼";
+  const stemKey = findKey(stemKeyCandidates) || "宮干";
+
+  // 星曜欄：排除幾個基本欄位，其餘都當星曜欄掃描
+  const exclude = new Set([codeKey, stemKey, findKey(palaceNameCandidates), "身宮"]);
+  const starKeys = headerKeys.filter(k => !exclude.has(k));
+
+  for (const r of natalRows){
+    const code = (r[codeKey] || "").trim();
+    if (!code || !/^P\d+$/i.test(code)) continue;
+
+    const stem = (r[stemKey] || "").trim();
+    if (stem) palaceStem[code.toUpperCase()] = stem;
+
+    // 掃描星曜欄，把出現的星名登記到 starToPalace
+    for (const k of starKeys){
+      const v = normalizeStarName(r[k]);
+      if (!v) continue;
+
+      // 有些欄位可能是「夫妻」「身宮」這種非星名；先跳過太短或含括號的也可（先不過度篩）
+      // 這裡先做最小假設：只要是字就可能是星
+      starToPalace[v] = code.toUpperCase();
+    }
+  }
+
+  return { palaceStem, starToPalace, codeKey, stemKey };
+}
+
+/** ---------- 算「宮干四化飛星」：每宮(宮干) -> 四化星 -> 星所在宮 ---------- **/
+function computeFlyingTransforms({palaceStem, starToPalace}, stemTransformMap){
+  const transforms = []; // {from, to, type, star}
+
+  for (const from of Object.keys(palaceStem)){
+    const stem = palaceStem[from];
+    const t = stemTransformMap[stem];
+    if (!t) continue;
+
+    for (const type of ["祿","權","科","忌"]){
+      const star = normalizeStarName(t[type]);
+      if (!star) continue;
+
+      const to = starToPalace[star];
+      if (!to) continue; // 找不到這顆星落在哪宮，先跳過
+
+      transforms.push({ from, to, type, star });
+    }
+  }
+  return transforms;
+}
+
+/** ---------- 畫箭頭：線細、端點避開文字（縮短線段） ---------- **/
+function centerOfBox(box){
+  return { cx: box.x + box.w/2, cy: box.y + box.h/2 };
+}
+
+function shortenSegment(x1,y1,x2,y2, startPad=52, endPad=52){
+  const dx = x2-x1, dy = y2-y1;
+  const len = Math.sqrt(dx*dx + dy*dy) || 1;
+  const ux = dx/len, uy = dy/len;
+
+  return {
+    sx: x1 + ux*startPad,
+    sy: y1 + uy*startPad,
+    ex: x2 - ux*endPad,
+    ey: y2 - uy*endPad
+  };
+}
+
+function clearLines(){
+  document.getElementById("linesLayer").innerHTML = "";
+}
+
+function drawArrow(from, to, type){
+  const boxA = PALACE_BOX[from];
+  const boxB = PALACE_BOX[to];
+  if (!boxA || !boxB) return;
+
+  const {cx:ax, cy:ay} = centerOfBox(boxA);
+  const {cx:bx, cy:by} = centerOfBox(boxB);
+
+  // 端點避字：縮短線段（讓線不要壓到格子中央文字）
+  const seg = shortenSegment(ax,ay,bx,by, 62, 62);
+
+  const svgNS = "http://www.w3.org/2000/svg";
+  const line = document.createElementNS(svgNS, "line");
+  line.setAttribute("x1", seg.sx);
+  line.setAttribute("y1", seg.sy);
+  line.setAttribute("x2", seg.ex);
+  line.setAttribute("y2", seg.ey);
+
+  const color = COLOR_MAP[type] || "#2b2b2b";
+  line.setAttribute("stroke", color);
+  line.setAttribute("stroke-width", "2");          // ✅ 線變細
+  line.setAttribute("marker-end", "url(#arrowHead)");
+  line.setAttribute("stroke-linecap", "round");
+  line.setAttribute("opacity", "0.95");
+
+  document.getElementById("linesLayer").appendChild(line);
+}
+
+/** ---------- 主流程：抓兩張表 -> 算飛星 -> 畫線 ---------- **/
+async function main(){
+  try{
+    setStatus("狀態：載入 Google Sheet 中…");
+
+    const [transformRows, natalRows] = await Promise.all([
+      fetchCSV(CSV_TRANSFORMS_URL),
+      fetchCSV(CSV_NATAL_URL)
+    ]);
+
+    const stemTransformMap = buildStemTransformMap(transformRows);
+    const natalIndex = buildNatalIndex(natalRows);
+
+    const transforms = computeFlyingTransforms(natalIndex, stemTransformMap);
+
+    clearLines();
+    for (const t of transforms){
+      drawArrow(t.from, t.to, t.type);
+    }
+
+    // 顯示摘要：幫你檢查是不是有讀到資料
+    const missingStem = Object.keys(natalIndex.palaceStem).length === 0;
+    const missingMap = Object.keys(stemTransformMap).length === 0;
+
+    let msg = `✅ 已完成：畫出 ${transforms.length} 條「宮干四化」飛線\n`;
+    msg += `本命盤：讀到 ${Object.keys(natalIndex.palaceStem).length} 宮的宮干、${Object.keys(natalIndex.starToPalace).length} 個星曜落點\n`;
+    msg += `四化表：讀到 ${Object.keys(stemTransformMap).length} 個天干對照\n`;
+
+    if (missingStem) msg += "\n⚠️ 我沒有在本命盤表中找到「宮位代碼(P1..P12)」或「宮干」欄位，請確認表頭名稱是否為「宮位代碼」「宮干」。";
+    if (missingMap)  msg += "\n⚠️ 我沒有在四化對照表中找到「宮干/天干」及「化祿/化權/化科/化忌」欄位，請確認表頭名稱。";
+
+    // 若某些星找不到落宮，也會導致線數偏少
+    msg += "\n（若線數太少：通常是四化表的星名與本命盤的星名寫法不一致，例如多了空格、異體字。）";
+
+    setStatus(msg);
+
+  }catch(err){
+    console.error(err);
+    setStatus("❌ 載入/解析失敗：\n" + (err?.message || err));
+  }
+}
+
+window.addEventListener("load", main);
 </script>
 
 </body>
