@@ -378,11 +378,15 @@ function drawPalaceBox(p){
   };
 
   // 收集所有要顯示的星（依你的分類順序）
-  const starItems = [];
-  p.stars.main.forEach(s => starItems.push({name:s, cls:"star-main"}));
-  p.stars.good.forEach(s => starItems.push({name:s, cls:"star-good"}));
-  p.stars.bad .forEach(s => starItems.push({name:s, cls:"star-bad"}));
-  p.stars.sub .forEach(s => starItems.push({name:s, cls:"star-sub"}));
+const starItems = [];
+
+/* 第一排：主星 + 吉星 + 煞星 */
+p.stars.main.forEach(s => starItems.push({name:s, cls:"star-main", row:0}));
+p.stars.good.forEach(s => starItems.push({name:s, cls:"star-good", row:0}));
+p.stars.bad .forEach(s => starItems.push({name:s, cls:"star-bad",  row:0}));
+
+/* 第二排：乙級星（降權） */
+p.stars.sub.forEach(s => starItems.push({name:s, cls:"star-sub", row:1}));
 
   // 佈局：最多 3 欄，自動換行
   const cols = 3;
