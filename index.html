@@ -59,10 +59,29 @@
       fill:#d72b2b;
     }
 
-    .star-main{ fill:#111; font-weight:800; }
-    .star-good{ fill:#0f7a35; font-weight:800; }
-    .star-bad { fill:#d72b2b; font-weight:800; }
-    .star-sub { fill:#333; font-weight:600; }
+/* ===== 星曜視覺分層 ===== */
+
+/* 主星：紅色、最大、最醒目 */
+.star-main{
+  fill:#d72b2b;
+  font-weight:900;
+  font-size:17px;
+}
+
+/* 吉星 / 煞星：黑色、粗體 */
+.star-good,
+.star-bad{
+  fill:#111;
+  font-weight:800;
+  font-size:15px;
+}
+
+/* 乙級星：小字、淺灰、降權 */
+.star-sub{
+  fill:#9aa0a6;
+  font-weight:500;
+  font-size:12px;
+}
 
     .star-text{
       font-size:15px;
