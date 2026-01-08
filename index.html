@@ -577,15 +577,15 @@ function drawArrow(fromCode, toCode, type, orderInFrom = 0) {
   const fromC = palaceCenter(fromCode);
   const toC = palaceCenter(toCode);
 
-  const { start, end } = clipToRect(fromC, toC, fromCode, toCode, 22);
+const { start, end } = clipToRect(fromC, toC, fromCode, toCode, 34);
 
   const dx = end.x - start.x;
   const dy = end.y - start.y;
   const dist = Math.hypot(dx, dy) || 1;
 
   // 距離越短，彎曲越大（避免短線擠在一起）
-  const distanceFactor = Math.max(0.6, 220 / dist);
-  const bend = (orderInFrom - 1.5) * 40 * distanceFactor;
+const distanceFactor = Math.max(0.8, 280 / dist);
+const bend = (orderInFrom - 1.5) * 55 * distanceFactor;
 
   const d = curvedPath(start, end, bend);
 
