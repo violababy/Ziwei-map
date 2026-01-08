@@ -130,25 +130,14 @@
     <h1>🔮 紫微飛星視覺引擎（資料驅動版）</h1>
 
     <div class="panel">
-      <svg id="svg" width="1100" height="800" viewBox="0 0 1100 800" aria-label="ziwei-map">
-        <defs>
-          <!-- 讓箭頭方向非常清楚：每種顏色各一個 marker -->
-          <marker id="m-lu" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L10,5 L0,10 Z" fill="#0b6b2d"></path>
-          </marker>
-          <marker id="m-quan" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L10,5 L0,10 Z" fill="#0b2f8a"></path>
-          </marker>
-          <marker id="m-ke" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L10,5 L0,10 Z" fill="#2b86ff"></path>
-          </marker>
-          <marker id="m-ji" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L10,5 L0,10 Z" fill="#d72b2b"></path>
-          </marker>
-        </defs>
+<svg id="svg" width="1100" height="800" viewBox="0 0 1100 800" aria-label="ziwei-map">
+  <defs>
+    <!-- marker 保留你原本的，不要刪 -->
+  </defs>
 
-        <!-- 背景/格子會由 JS 繪製 -->
-      </svg>
+  <g id="arrow-layer"></g>
+  <g id="box-layer"></g>
+</svg>
 
       <div class="hint">
         ✅ 資料來源：Google Sheet（CSV）<br/>
