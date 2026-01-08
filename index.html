@@ -540,43 +540,45 @@ function curvedPath(start, end, bend){
 }
 
 /** 畫一條箭頭 */
-function drawArrow(fromCode, toCode, type, orderInFrom=0){
-  if(fromCode === toCode) return; // 同宮先不畫（之後可畫小迴圈）
+function drawArrow(fromCode, toCode, type, orderInFrom = 0) {
+  if (fromCode === toCode) return;
+
   const fromC = palaceCenter(fromCode);
   const toC = palaceCenter(toCode);
 
   const { start, end } = clipToRect(fromC, toC, fromCode, toCode, 22);
 
-  // 同起點第幾條：做偏移，讓你能數得出條數
-  // 根據距離動態調整彎曲強度（短線彎更多）
-const dx = end.x - start.x;
-const dy = end.y - start.y;
-const dist = Math.hypot(dx, dy);
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const dist = Math.hypot(dx, dy) || 1;
 
-// 距離越短，彎曲越大（下限保護）
-const distanceFactor = Math.max(0.6, 220 / dist);
+  // 距離越短，彎曲越大（避免短線擠在一起）
+  const distanceFactor = Math.max(0.6, 220 / dist);
+  const bend = (orderInFrom - 1.5) * 40 * distanceFactor;
 
-// 同起點第幾條線做扇形展開
-const bend = (orderInFrom - 1.5) * 40 * distanceFactor;
   const d = curvedPath(start, end, bend);
 
   const path = elNS("path");
-  const cls = (type==="祿") ? "arrow arrow-lu"
-            : (type==="權") ? "arrow arrow-quan"
-            : (type==="科") ? "arrow arrow-ke"
-            : "arrow arrow-ji";
+  const cls =
+    (type === "祿") ? "arrow arrow-lu" :
+    (type === "權") ? "arrow arrow-quan" :
+    (type === "科") ? "arrow arrow-ke" :
+    "arrow arrow-ji";
+
   path.setAttribute("class", cls);
   path.setAttribute("d", d);
 
-  const marker = (type==="祿") ? "url(#m-lu)"
-               : (type==="權") ? "url(#m-quan)"
-               : (type==="科") ? "url(#m-ke)"
-               : "url(#m-ji)";
+  const marker =
+    (type === "祿") ? "url(#m-lu)" :
+    (type === "權") ? "url(#m-quan)" :
+    (type === "科") ? "url(#m-ke)" :
+    "url(#m-ji)";
+
   path.setAttribute("marker-end", marker);
 
- // 直接畫在最上層（不再被格子遮住）
-svg.appendChild(path);
-  }
+  // 放到最上層（避免被格子蓋住）
+  svg.appendChild(path);
+}
 
 /** ========= 主流程 ========= */
 async function main(){
