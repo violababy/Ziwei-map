@@ -131,9 +131,12 @@
 
     <div class="panel">
 <svg id="svg" width="1100" height="800" viewBox="0 0 1100 800" aria-label="ziwei-map">
-  <defs>
-    <!-- marker 保留你原本的，不要刪 -->
-  </defs>
+<defs>
+  <marker id="m-lu" ...>...</marker>
+  <marker id="m-quan" ...>...</marker>
+  <marker id="m-ke" ...>...</marker>
+  <marker id="m-ji" ...>...</marker>
+</defs>
 
   <g id="arrow-layer"></g>
   <g id="box-layer"></g>
@@ -305,7 +308,8 @@ function buildNatal(rows){
 
 /** ========= SVG 繪製 ========= */
 const svg = document.getElementById("svg");
-
+const arrowLayer = document.getElementById("arrow-layer");
+const boxLayer   = document.getElementById("box-layer");
 function clearSVG(){
   // 保留 defs
   const defs = svg.querySelector("defs");
@@ -427,7 +431,7 @@ visible.forEach((it) => {
   it._y = cy;
 });
 
-  svg.appendChild(g);
+boxLayer.appendChild(g);
   return { g, rectBounds:{x:pos.x,y:pos.y,w:layout.w,h:layout.h} };
 }
 
@@ -566,7 +570,7 @@ function drawArrow(fromCode, toCode, type, orderInFrom = 0) {
   path.setAttribute("marker-end", marker);
 
   // 放到最上層（避免被格子蓋住）
-  svg.appendChild(path);
+arrowLayer.appendChild(path);
 }
 
 /** ========= 主流程 ========= */
