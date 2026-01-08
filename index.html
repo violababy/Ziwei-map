@@ -102,7 +102,7 @@
 
     .arrow{
       fill:none;
-      stroke-width:2;   /* 線細一點 */
+      stroke-width:1.6;   /* 線細一點 */
       opacity:.95;
     }
     .arrow-lu { stroke:#0b6b2d; }
@@ -133,16 +133,16 @@
       <svg id="svg" width="1100" height="800" viewBox="0 0 1100 800" aria-label="ziwei-map">
         <defs>
           <!-- 讓箭頭方向非常清楚：每種顏色各一個 marker -->
-          <marker id="m-lu" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+          <marker id="m-lu" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
             <path d="M0,0 L10,5 L0,10 Z" fill="#0b6b2d"></path>
           </marker>
-          <marker id="m-quan" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+          <marker id="m-quan" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
             <path d="M0,0 L10,5 L0,10 Z" fill="#0b2f8a"></path>
           </marker>
-          <marker id="m-ke" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+          <marker id="m-ke" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
             <path d="M0,0 L10,5 L0,10 Z" fill="#2b86ff"></path>
           </marker>
-          <marker id="m-ji" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+          <marker id="m-ji" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="strokeWidth">
             <path d="M0,0 L10,5 L0,10 Z" fill="#d72b2b"></path>
           </marker>
         </defs>
@@ -548,7 +548,16 @@ function drawArrow(fromCode, toCode, type, orderInFrom=0){
   const { start, end } = clipToRect(fromC, toC, fromCode, toCode, 22);
 
   // 同起點第幾條：做偏移，讓你能數得出條數
-  const bend = (orderInFrom - 1.5) * 18; // 可調：越大越不重疊
+  // 根據距離動態調整彎曲強度（短線彎更多）
+const dx = end.x - start.x;
+const dy = end.y - start.y;
+const dist = Math.hypot(dx, dy);
+
+// 距離越短，彎曲越大（下限保護）
+const distanceFactor = Math.max(0.6, 220 / dist);
+
+// 同起點第幾條線做扇形展開
+const bend = (orderInFrom - 1.5) * 18 * distanceFactor;
   const d = curvedPath(start, end, bend);
 
   const path = elNS("path");
