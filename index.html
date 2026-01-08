@@ -390,53 +390,53 @@ p.stars.sub.forEach(s => starItems.push({name:s, cls:"star-sub", row:1}));
 
   // 佈局：最多 3 欄，自動換行
 
+// 佈局：第一排(主星/吉星/煞星) + 第二排(乙級星)
 const cols = 3;
 const cellW = area.w / cols;
-const rowY = [0, 26];   // 第一排 / 第二排 的 Y 偏移
+const rowY = [0, 26]; // 第一排 / 第二排 的 Y 偏移
 const visible = starItems;
 
-visible.forEach((it, idx) => {
+visible.forEach((it) => {
   const sameRow = visible.filter(x => x.row === it.row);
-  const colIndex = sameRow.indexOf(it) % cols;
+  const idxInRow = sameRow.indexOf(it);
+  const colIndex = idxInRow % cols;
 
   const cx = area.x + colIndex * cellW + cellW / 2;
   const cy = area.y + rowY[it.row] + 12;
 
-    const cx = area.x + col*cellW + cellW/2;
-    const cy = area.y + row*cellH + cellH/2;
+  const t = elNS("text");
+  t.setAttribute("class", `star-text ${it.cls}`);
+  t.setAttribute("x", cx);
+  t.setAttribute("y", cy);
+  t.textContent = it.name;
+  g.appendChild(t);
 
-    const t = elNS("text");
-    t.setAttribute("class", `star-text ${it.cls}`);
-    t.setAttribute("x", cx);
-    t.setAttribute("y", cy);
-    t.textContent = it.name;
-    g.appendChild(t);
+  // 生年四化：在「星名下方」
+  const bornMark = getMarkForStar(it.name, p.born);
+  if (bornMark) {
+    const m = elNS("text");
+    m.setAttribute("class", `mark ${bornMark.cls}`);
+    m.setAttribute("x", cx);
+    m.setAttribute("y", cy + 11);
+    m.textContent = bornMark.txt;
+    g.appendChild(m);
+  }
 
-    // 生年四化：在「星名下方」
-    const bornMark = getMarkForStar(it.name, p.born);
-    if(bornMark){
-      const m = elNS("text");
-      m.setAttribute("class", `mark ${bornMark.cls}`);
-      m.setAttribute("x", cx);
-      m.setAttribute("y", cy + 11);
-      m.textContent = bornMark.txt;
-      g.appendChild(m);
-    }
+  // 自化四化：在「星名上方」
+  const selfMark = getMarkForStar(it.name, p.self);
+  if (selfMark) {
+    const m = elNS("text");
+    m.setAttribute("class", `mark ${selfMark.cls}`);
+    m.setAttribute("x", cx);
+    m.setAttribute("y", cy - 11);
+    m.textContent = selfMark.txt;
+    g.appendChild(m);
+  }
 
-    // 自化四化：在「星名上方」
-    const selfMark = getMarkForStar(it.name, p.self);
-    if(selfMark){
-      const m = elNS("text");
-      m.setAttribute("class", `mark ${selfMark.cls}`);
-      m.setAttribute("x", cx);
-      m.setAttribute("y", cy - 11);
-      m.textContent = selfMark.txt;
-      g.appendChild(m);
-    }
-
-    // 記錄星在 SVG 的位置（用於找星落宮 & 畫線避字）
-    it._x = cx; it._y = cy;
-  });
+  // 記錄星在 SVG 的位置
+  it._x = cx;
+  it._y = cy;
+});
 
   svg.appendChild(g);
   return { g, rectBounds:{x:pos.x,y:pos.y,w:layout.w,h:layout.h} };
