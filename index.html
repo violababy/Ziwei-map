@@ -590,16 +590,11 @@ async function main(){
       fetchCSV(TRANSFORM_CSV_URL),
     ]);
 
-    const natal = buildNatal(natalRows);
-    const transformMap = buildTransformMap(transRows);
-    const starIndex = buildStarIndex(natal);
+const natal = buildNatal(natalRows);
+const transformMap = buildTransformMap(transRows);
+const starIndex = buildStarIndex(natal);
 
-    // 先畫線（底層）→ 再畫格子文字（上層）
-    // 但線需要知道「四化星落在哪宮」，而這可以由：宮干→四化星名→星所在宮 取得
-    // 同起宮線條順序：用計數器避免重疊
-    const fromCount = new Map();
-
-    // ===== Step 1：先畫所有箭頭 =====
+// ===== Step 1：先畫所有箭頭 =====
 const fromCount = new Map();
 
 natal.forEach(p => {
@@ -607,10 +602,10 @@ natal.forEach(p => {
   if (!t) return;
 
   const pairs = [
-    { type:"祿", star:t.lu },
-    { type:"權", star:t.quan },
-    { type:"科", star:t.ke },
-    { type:"忌", star:t.ji },
+    { type: "祿", star: t.lu },
+    { type: "權", star: t.quan },
+    { type: "科", star: t.ke },
+    { type: "忌", star: t.ji },
   ].filter(x => x.star);
 
   pairs.forEach(pair => {
