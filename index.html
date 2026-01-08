@@ -322,8 +322,9 @@ const svg = document.getElementById("svg");
 let arrowLayer = document.getElementById("arrow-layer");
 let boxLayer   = document.getElementById("box-layer");
 function clearSVG(){
-  if (arrowLayer) arrowLayer.innerHTML = "";
-  if (boxLayer) boxLayer.innerHTML = "";
+  // 只清空 layer 內容，不破壞 DOM 結構與順序
+  arrowLayer.innerHTML = "";
+  boxLayer.innerHTML = "";
 }
 
 function elNS(tag){
