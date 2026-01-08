@@ -597,31 +597,34 @@ async function main(){
     // 同起宮線條順序：用計數器避免重疊
     const fromCount = new Map();
 
-    natal.forEach(p => {
-      const t = transformMap[p.stem];
-      if(!t) return;
+    // ===== Step 1：先畫所有箭頭 =====
+const fromCount = new Map();
 
-      const pairs = [
-        { type:"祿", star:t.lu },
-        { type:"權", star:t.quan },
-        { type:"科", star:t.ke },
-        { type:"忌", star:t.ji },
-      ].filter(x => x.star);
+natal.forEach(p => {
+  const t = transformMap[p.stem];
+  if (!t) return;
 
-      pairs.forEach(pair => {
-        const toCode = starIndex.get(pair.star);
-        if(!toCode) return;
+  const pairs = [
+    { type:"祿", star:t.lu },
+    { type:"權", star:t.quan },
+    { type:"科", star:t.ke },
+    { type:"忌", star:t.ji },
+  ].filter(x => x.star);
 
-        const k = p.code;
-        const cnt = (fromCount.get(k) ?? 0);
-        fromCount.set(k, cnt+1);
+  pairs.forEach(pair => {
+    const toCode = starIndex.get(pair.star);
+    if (!toCode) return;
 
-        drawArrow(p.code, toCode, pair.type, cnt);
-      });
-    });
+    const k = p.code;
+    const cnt = (fromCount.get(k) ?? 0);
+    fromCount.set(k, cnt + 1);
 
-    // 再畫 12 宮與星曜（上層）
-    natal.forEach(p => drawPalaceBox(p));
+    drawArrow(p.code, toCode, pair.type, cnt);
+  });
+});
+
+// ===== Step 2：再畫 12 宮與星曜（上層）=====
+natal.forEach(p => drawPalaceBox(p));
 
   }catch(e){
     showError(String(e && e.message ? e.message : e));
